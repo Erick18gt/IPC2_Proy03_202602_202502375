@@ -13,9 +13,7 @@ public class AutorizacionesController : ControllerBase
 
     public AutorizacionesController(ServicioAutorizaciones servicio) => _servicio = servicio;
 
-    // POST api/autorizaciones: me mandan la lista de facturas en un JSON.
-    // Se la paso al servicio junto con la fecha de hoy (DateTime.Now), que se usa para
-    // el número de autorización, y devuelvo lo que él me responda.
+   
     [HttpPost]
     public IActionResult Procesar([FromBody] List<FacturaEntrada?>? facturas)
     {

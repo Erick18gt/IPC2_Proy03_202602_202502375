@@ -1,51 +1,67 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    // Sirve para marcar en el menú la sección donde estamos.
+    string ruta = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    string Activo(string inicio) => ruta.StartsWith(inicio, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Programa1_Frontend</title>
+    <title>@ViewData["Title"] - Simulador DTE</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Programa1_Frontend.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-marca">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Programa1_Frontend</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-semibold" asp-page="/Index">Simulador DTE · SAT</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+                        aria-controls="menu" aria-expanded="false" aria-label="Abrir menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="menu">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link @Activo("/Enviar")" asp-page="/Enviar">Enviar mensaje</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle @Activo("/Peticiones")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Peticiones</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-page="/Peticiones/Contribuyente">Consultar contribuyente</a></li>
+                                <li><a class="dropdown-item" asp-page="/Peticiones/ResumenIva">Resumen de IVA por fecha y NIT</a></li>
+                                <li><a class="dropdown-item" asp-page="/Peticiones/ResumenRango">Resumen por rango de fechas</a></li>
+                                <li><a class="dropdown-item" asp-page="/Peticiones/ReporteFacturas">Reporte de facturas por fecha</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" asp-page="/Peticiones/ReportePdf">Reporte completo en PDF</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle @Activo("/Ayuda")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ayuda</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-page="/Ayuda/Estudiante">Información del estudiante</a></li>
+                                <li><a class="dropdown-item" asp-page="/Ayuda/Documentacion">Documentación del programa</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link @Activo("/Inicializar")" asp-page="/Inicializar">Inicializar</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Programa1_Frontend - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
+    <main class="container py-4">
+        @RenderBody()
+    </main>
+
+    <footer class="container py-3 text-center">
+        Introducción a la Programación y Computación 2 · Proyecto 3 · Segundo semestre 2026
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

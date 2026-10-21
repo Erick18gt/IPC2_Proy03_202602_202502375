@@ -1,0 +1,85 @@
+@page
+@model ReporteFacturasModel
+@{
+    ViewData["Title"] = "Reporte de facturas por fecha";
+}
+
+<h1 class="h3 mb-2">Reporte de facturas por fecha</h1>
+<p class="text-muted">Por cada fecha: facturas recibidas, errores encontrados, facturas sin errores y cantidad de emisores y receptores distintos.</p>
+
+<form method="get" class="tarjeta mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Inicio">Desde</label>
+            <input class="form-control" type="date" id="Inicio" name="Inicio" value="@Model.Inicio" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Fin">Hasta</label>
+            <input class="form-control" type="date" id="Fin" name="Fin" value="@Model.Fin" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Reporte != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <span class="text-muted">Mostrando: @Model.RangoTexto</span>
+        @if (Model.Reporte.Count > 0)
+        {
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btn-pdf">Descargar PDF</button>
+        }
+    </div>
+
+    @if (Model.Reporte.Count == 0)
+    {
+        <div class="tarjeta text-muted">Todavía no hay facturas recibidas para ese filtro.</div>
+    }
+
+    <div class="row g-3">
+        @foreach (ReporteFecha r in Model.Reporte)
+        {
+            <div class="col-lg-6">
+                <div class="tarjeta h-100" data-fecha="@r.Fecha">
+                    <h2 class="h5">FECHA: @r.Fecha</h2>
+                    <p class="mb-2"><strong>Cantidad total de facturas recibidas:</strong> @r.FacturasRecibidas</p>
+                    <p class="mb-1"><strong>Listado de errores en facturas recibidas</strong></p>
+                    <ul class="list-unstyled ms-3 mb-2">
+                        <li>NIT emisor inválido: @r.Errores.NitEmisorInvalido</li>
+                        <li>NIT receptor inválido: @r.Errores.NitReceptorInvalido</li>
+                        <li>NIT emisor inexistente: @r.Errores.NitEmisorInexistente</li>
+                        <li>NIT receptor inexistente: @r.Errores.NitReceptorInexistente</li>
+                        <li>IVA mal calculado: @r.Errores.IvaMalCalculado</li>
+                        <li>TOTAL mal calculado: @r.Errores.TotalMalCalculado</li>
+                        <li>REFERENCIA duplicada: @r.Errores.ReferenciaDuplicada</li>
+                    </ul>
+                    <p class="mb-1"><strong>Cantidad de facturas sin errores:</strong> @r.FacturasSinErrores</p>
+                    <p class="mb-1"><strong>Cantidad de emisores de facturas:</strong> @r.Emisores</p>
+                    <p class="mb-0"><strong>Cantidad de receptores de facturas:</strong> @r.Receptores</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script id="datos" type="application/json">@Html.Raw(Model.DatosJson)</script>
+}
+
+@section Scripts {
+    <partial name="_LibreriasGraficas" />
+    <script>
+        const boton = document.getElementById('btn-pdf');
+        if (boton) {
+            boton.addEventListener('click', () => {
+                const datos = JSON.parse(document.getElementById('datos').textContent);
+                Reportes.descargar(datos, 'reporte-facturas.pdf');
+            });
+        }
+    </script>
+}

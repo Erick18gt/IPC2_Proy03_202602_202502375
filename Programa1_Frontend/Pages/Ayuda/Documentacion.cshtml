@@ -1,0 +1,22 @@
+@page
+@model DocumentacionModel
+@{
+    ViewData["Title"] = "Documentación del programa";
+}
+
+<h1 class="h3 mb-3">Documentación del programa</h1>
+
+@if (Model.Existe)
+{
+    <div class="d-flex justify-content-end mb-2">
+        <a class="btn btn-outline-primary btn-sm" href="~/docs/documentacion.pdf" target="_blank" download>Descargar PDF</a>
+    </div>
+    <iframe src="~/docs/documentacion.pdf" title="Documentación del programa" style="width:100%; height:75vh; border:1px solid #e3e7ee; border-radius:.75rem; background:#fff;"></iframe>
+}
+else
+{
+    <div class="alert alert-info">
+        La documentación todavía no está disponible. Cuando esté lista, se guarda en
+        <code>Programa1_Frontend/wwwroot/docs/documentacion.pdf</code> y aparece aquí.
+    </div>
+}

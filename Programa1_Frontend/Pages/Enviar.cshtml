@@ -1,0 +1,115 @@
+@page
+@model EnviarModel
+@{
+    ViewData["Title"] = "Enviar mensaje";
+}
+
+<h1 class="h3 mb-2">Enviar mensaje</h1>
+<p class="text-muted">
+    Elige uno o varios archivos <code>.json</code>. El programa detecta si son una actualización del RTU o una solicitud
+    de autorización de facturas, y los manda a la API. Si eliges varios, primero se envían los del RTU y después los de facturas.
+</p>
+
+<form method="post" enctype="multipart/form-data" class="tarjeta mb-4">
+    <div class="mb-3">
+        <label class="form-label fw-semibold" for="Archivos">Archivos JSON</label>
+        <input type="file" class="form-control" id="Archivos" name="Archivos" multiple accept=".json,application/json" required />
+    </div>
+    <div class="mb-3">
+        <span class="form-label fw-semibold d-block">Tipo de mensaje</span>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Modo" id="modo-auto" value="auto" checked="@(Model.Modo == "auto")" />
+            <label class="form-check-label" for="modo-auto">Detectar automáticamente</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Modo" id="modo-rtu" value="rtu" checked="@(Model.Modo == "rtu")" />
+            <label class="form-check-label" for="modo-rtu">Actualización del RTU</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Modo" id="modo-facturas" value="facturas" checked="@(Model.Modo == "facturas")" />
+            <label class="form-check-label" for="modo-facturas">Solicitud de facturas</label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Enviar a la API</button>
+</form>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-warning">@Model.Error</div>
+}
+
+@foreach (ResultadoArchivo r in Model.Resultados)
+{
+    <div class="tarjeta mb-3" data-archivo="@r.Nombre">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <h2 class="h5 mb-0">@r.Nombre</h2>
+                @if (r.Tipo != "")
+                {
+                    <span class="text-muted small">@r.Cantidad registro(s)</span>
+                }
+            </div>
+            @if (r.Tipo != "")
+            {
+                <span class="badge @(r.Tipo == "RTU" ? "text-bg-info" : "text-bg-primary")">@r.Tipo</span>
+            }
+        </div>
+
+        @if (r.Error != null)
+        {
+            <div class="alert alert-danger mt-3 mb-0">@r.Error</div>
+        }
+        else
+        {
+            <h3 class="h6 mt-3">Eventos que se enviaron (vista previa de los primeros @r.Filas.Count)</h3>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered tabla-datos mb-3">
+                    <thead><tr>@foreach (string e in r.Encabezados) { <th>@e</th> }</tr></thead>
+                    <tbody>
+                        @foreach (string[] fila in r.Filas)
+                        {
+                            <tr>@foreach (string celda in fila) { <td>@celda</td> }</tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="h6">Respuesta de la API</h3>
+            @if (r.RespuestaRtu != null)
+            {
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4"><div class="dato"><div class="numero">@r.RespuestaRtu.Nuevos</div><div class="texto">Contribuyentes nuevos</div></div></div>
+                    <div class="col-md-4"><div class="dato"><div class="numero">@r.RespuestaRtu.Actualizados</div><div class="texto">Contribuyentes actualizados</div></div></div>
+                    <div class="col-md-4"><div class="dato"><div class="numero">@r.RespuestaRtu.Invalidos</div><div class="texto">NITs inválidos</div></div></div>
+                </div>
+            }
+            @if (r.RespuestaAutorizaciones != null)
+            {
+                var res = r.RespuestaAutorizaciones.Resultado;
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4"><div class="dato"><div class="numero">@res.Aprobadas</div><div class="texto">Autorizaciones aprobadas</div></div></div>
+                    <div class="col-md-4"><div class="dato"><div class="numero">@res.RechazadasPorEmisorInexistente</div><div class="texto">Rechazadas: NIT emisor inexistente</div></div></div>
+                    <div class="col-md-4"><div class="dato"><div class="numero">@res.RechazadasPorReceptorInexistente</div><div class="texto">Rechazadas: NIT receptor inexistente</div></div></div>
+                </div>
+                @if (res.Detalle.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered tabla-datos mb-3">
+                            <thead><tr><th>Referencia</th><th>Código de aprobación</th></tr></thead>
+                            <tbody>
+                                @foreach (DetalleAprobacion d in res.Detalle)
+                                {
+                                    <tr><td>@d.Referencia</td><td class="mono">@Formato.Codigo(d.CodigoAprobacion)</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+            <details>
+                <summary class="text-primary" style="cursor:pointer">Ver el JSON de la respuesta</summary>
+                <pre class="json mt-2 mb-0">@Formato.JsonBonito(r.JsonRespuesta)</pre>
+            </details>
+        }
+    </div>
+}

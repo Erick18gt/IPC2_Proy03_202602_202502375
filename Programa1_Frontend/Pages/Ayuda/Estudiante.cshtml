@@ -1,0 +1,29 @@
+@page
+@model EstudianteModel
+@{
+    ViewData["Title"] = "Información del estudiante";
+}
+
+<h1 class="h3 mb-3">Información del estudiante</h1>
+
+<div class="tarjeta" style="max-width: 640px;">
+    <dl class="row mb-0">
+        <dt class="col-sm-4">Nombre</dt>
+        <dd class="col-sm-8">@Model.Nombre</dd>
+
+        <dt class="col-sm-4">Carnet</dt>
+        <dd class="col-sm-8">@Model.Carnet</dd>
+
+        <dt class="col-sm-4">Curso</dt>
+        <dd class="col-sm-8">@Model.Curso</dd>
+
+        <dt class="col-sm-4">Sección</dt>
+        <dd class="col-sm-8">@Model.Seccion</dd>
+
+        <dt class="col-sm-4">Semestre</dt>
+        <dd class="col-sm-8">@Model.Semestre</dd>
+
+        <dt class="col-sm-4">Repositorio</dt>
+        <dd class="col-sm-8 mb-0"><a href="@Model.Repositorio" target="_blank" rel="noopener">@Model.Repositorio</a></dd>
+    </dl>
+</div>

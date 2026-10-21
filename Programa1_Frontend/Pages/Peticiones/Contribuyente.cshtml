@@ -1,0 +1,109 @@
+@page
+@model ContribuyenteModel
+@{
+    ViewData["Title"] = "Consultar contribuyente";
+}
+
+<h1 class="h3 mb-2">Consultar contribuyente</h1>
+<p class="text-muted">Muestra, por cada fecha, la cantidad de facturas autorizadas y el monto total facturado por un NIT, y el total de todo el rango.</p>
+
+<form method="get" class="tarjeta mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold" for="Nit">NIT</label>
+            <input class="form-control" id="Nit" name="Nit" list="lista-nits" value="@Model.Nit" required autocomplete="off" />
+            <datalist id="lista-nits">
+                @foreach (Contribuyente c in Model.Rtu)
+                {
+                    <option value="@c.Nit">@c.Nombre</option>
+                }
+            </datalist>
+        </div>
+        <div class="col-md-3">
+            <span class="form-label fw-semibold d-block">Facturas</span>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipo-emitidas" value="emitidas" checked="@(Model.Tipo != "recibidas")" />
+                <label class="form-check-label" for="tipo-emitidas">Emitidas</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipo-recibidas" value="recibidas" checked="@(Model.Tipo == "recibidas")" />
+                <label class="form-check-label" for="tipo-recibidas">Recibidas</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-semibold" for="Inicio">Desde</label>
+            <input class="form-control" type="date" id="Inicio" name="Inicio" value="@Model.Inicio" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label fw-semibold" for="Fin">Hasta</label>
+            <input class="form-control" type="date" id="Fin" name="Fin" value="@Model.Fin" />
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Consultar</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Datos != null)
+{
+    var d = Model.Datos;
+    <div class="tarjeta" id="resultado">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="h5 mb-0">@d.Nit @(d.Nombre != null ? "- " + d.Nombre : "")</h2>
+                <span class="text-muted small">Facturas @d.Tipo autorizadas · @Model.RangoTexto</span>
+                @if (d.Nombre == null)
+                {
+                    <div class="small text-warning">Este NIT no está en el RTU.</div>
+                }
+            </div>
+            @if (d.Detalle.Count > 0)
+            {
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btn-pdf">Descargar PDF</button>
+            }
+        </div>
+
+        @if (d.Detalle.Count == 0)
+        {
+            <p class="text-muted mb-0">No hay facturas autorizadas para ese filtro.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered tabla-datos mb-3">
+                    <thead><tr><th>Fecha</th><th class="num">Facturas autorizadas</th><th class="num">Monto total</th></tr></thead>
+                    <tbody>
+                        @foreach (LineaContribuyente l in d.Detalle)
+                        {
+                            <tr><td>@l.Fecha</td><td class="num">@l.CantidadFacturas</td><td class="num">@Formato.Dinero(l.MontoTotal)</td></tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-semibold"><td colspan="2">Total facturado en todo el rango</td><td class="num">@Formato.Dinero(d.TotalFacturado)</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+
+    <script id="datos" type="application/json">@Html.Raw(Model.DatosJson)</script>
+}
+
+@section Scripts {
+    <partial name="_LibreriasGraficas" />
+    <script>
+        // Al presionar el botón se arma el PDF con los datos que la página trae guardados.
+        const boton = document.getElementById('btn-pdf');
+        if (boton) {
+            boton.addEventListener('click', () => {
+                const datos = JSON.parse(document.getElementById('datos').textContent);
+                Reportes.descargar(datos, 'consulta-contribuyente.pdf');
+            });
+        }
+    </script>
+}

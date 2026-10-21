@@ -1,10 +1,74 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="tarjeta mb-4">
+    <h1 class="h3">Simulador de autorización de facturas (DTE)</h1>
+    <p class="text-muted mb-0">
+        Este programa sirve para probar el servicio de la SAT. Se envían archivos JSON con el RTU o con facturas,
+        y después se consultan los reportes, los resúmenes y las gráficas.
+    </p>
+</div>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">
+        <strong>La API no está disponible.</strong> @Model.Error
+    </div>
+}
+else if (Model.Estado != null)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="dato"><div class="numero">@Model.Estado.Contribuyentes</div><div class="texto">Contribuyentes en el RTU</div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="dato"><div class="numero">@Model.Estado.FacturasRecibidas</div><div class="texto">Facturas recibidas</div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="dato"><div class="numero">@Model.Estado.FacturasAprobadas</div><div class="texto">Facturas aprobadas</div></div>
+        </div>
+    </div>
+}
+
+<h2 class="h5 mb-3">¿Qué quieres hacer?</h2>
+<div class="row g-3">
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Enviar">
+            <div class="titulo">Enviar mensaje</div>
+            <div class="detalle">Subir archivos JSON del RTU o de facturas.</div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Peticiones/Contribuyente">
+            <div class="titulo">Consultar contribuyente</div>
+            <div class="detalle">Facturas emitidas o recibidas por un NIT.</div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Peticiones/ResumenIva">
+            <div class="titulo">Resumen de IVA por fecha y NIT</div>
+            <div class="detalle">IVA emitido y recibido, con gráfica.</div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Peticiones/ResumenRango">
+            <div class="titulo">Resumen por rango de fechas</div>
+            <div class="detalle">Valor autorizado por día, con gráfica.</div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Peticiones/ReporteFacturas">
+            <div class="titulo">Reporte de facturas por fecha</div>
+            <div class="detalle">Errores, facturas sin errores, emisores y receptores.</div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <a class="acceso" asp-page="/Peticiones/ReportePdf">
+            <div class="titulo">Reporte completo en PDF</div>
+            <div class="detalle">Todas las peticiones en un solo archivo.</div>
+        </a>
+    </div>
 </div>

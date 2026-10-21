@@ -1,0 +1,81 @@
+@page
+@model ResumenIvaModel
+@{
+    ViewData["Title"] = "Resumen de IVA por fecha y NIT";
+}
+
+<h1 class="h3 mb-2">Resumen de IVA por fecha y NIT</h1>
+<p class="text-muted">Elige una fecha y verás, por cada NIT, el IVA emitido y el IVA recibido ese día (solo facturas autorizadas).</p>
+
+<form method="get" class="tarjeta mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold" for="Fecha">Fecha</label>
+            <input class="form-control" type="date" id="Fecha" name="Fecha" value="@Model.Fecha" required />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Consultar</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Datos != null)
+{
+    var d = Model.Datos;
+    <div class="tarjeta mb-3" id="resultado">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <h2 class="h5 mb-0">Resumen del @d.Fecha</h2>
+            @if (d.Nits.Count > 0)
+            {
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btn-pdf">Descargar PDF</button>
+            }
+        </div>
+
+        @if (d.Nits.Count == 0)
+        {
+            <p class="text-muted mb-0">No hay facturas autorizadas en esa fecha.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered tabla-datos mb-0">
+                    <thead><tr><th>NIT</th><th>Nombre</th><th class="num">IVA emitido</th><th class="num">IVA recibido</th></tr></thead>
+                    <tbody>
+                        @foreach (LineaIva n in d.Nits)
+                        {
+                            <tr><td>@n.Nit</td><td>@n.Nombre</td><td class="num">@Formato.Dinero(n.IvaEmitido)</td><td class="num">@Formato.Dinero(n.IvaRecibido)</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    @if (d.Nits.Count > 0)
+    {
+        <div class="grafica"><canvas id="grafica"></canvas></div>
+    }
+
+    <script id="datos" type="application/json">@Html.Raw(Model.DatosJson)</script>
+}
+
+@section Scripts {
+    <partial name="_LibreriasGraficas" />
+    <script>
+        // Dibuja la gráfica y deja listo el botón del PDF.
+        const el = document.getElementById('datos');
+        if (el) {
+            const datos = JSON.parse(el.textContent);
+            const canvas = document.getElementById('grafica');
+            if (canvas) Graficas.iva(canvas, datos.iva);
+
+            const boton = document.getElementById('btn-pdf');
+            if (boton) boton.addEventListener('click', () => Reportes.descargar(datos, 'resumen-iva.pdf'));
+        }
+    </script>
+}

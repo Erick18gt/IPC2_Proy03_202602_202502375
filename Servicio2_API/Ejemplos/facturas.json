@@ -4,71 +4,71 @@
     "REFERENCIA": "A1990",
     "NIT_EMISOR": "7378106",
     "NIT_RECEPTOR": "8338817",
-    "VALOR": 100.0,
-    "IVA": 12.0,
-    "TOTAL": 112.0
+    "VALOR": 100.00,
+    "IVA": 12.00,
+    "TOTAL": 112.00
   },
   {
     "TIEMPO": "Guatemala, 15/01/2025 10:00 hrs.",
     "REFERENCIA": "A1991",
     "NIT_EMISOR": "7378106",
     "NIT_RECEPTOR": "8338817",
-    "VALOR": 200.0,
-    "IVA": 24.0,
-    "TOTAL": 224.0
+    "VALOR": 200.00,
+    "IVA": 24.00,
+    "TOTAL": 224.00
   },
   {
     "TIEMPO": "Guatemala, 15/01/2025 10:00 hrs.",
     "REFERENCIA": "A1991",
     "NIT_EMISOR": "7378106",
     "NIT_RECEPTOR": "8338817",
-    "VALOR": 50.0,
-    "IVA": 6.0,
-    "TOTAL": 56.0
+    "VALOR": 50.00,
+    "IVA": 6.00,
+    "TOTAL": 56.00
   },
   {
     "TIEMPO": "Guatemala, 16/01/2025 10:00 hrs.",
     "REFERENCIA": "A2000",
     "NIT_EMISOR": "7378106",
     "NIT_RECEPTOR": "5123456",
-    "VALOR": 75.0,
-    "IVA": 9.0,
-    "TOTAL": 84.0
+    "VALOR": 75.00,
+    "IVA": 9.00,
+    "TOTAL": 84.00
   },
   {
     "TIEMPO": "Guatemala, 16/01/2025 10:00 hrs.",
     "REFERENCIA": "A2001",
     "NIT_EMISOR": "7378106",
     "NIT_RECEPTOR": "999999K",
-    "VALOR": 10.0,
-    "IVA": 1.2,
-    "TOTAL": 11.2
+    "VALOR": 10.00,
+    "IVA": 1.20,
+    "TOTAL": 11.20
   },
   {
     "TIEMPO": "Guatemala, 16/01/2025 10:00 hrs.",
     "REFERENCIA": "A2002",
     "NIT_EMISOR": "8338817",
     "NIT_RECEPTOR": "7378106",
-    "VALOR": 80.5,
-    "IVA": 9.0,
-    "TOTAL": 89.5
+    "VALOR": 80.50,
+    "IVA": 9.00,
+    "TOTAL": 89.50
   },
   {
     "TIEMPO": "Guatemala, 16/01/2025 10:00 hrs.",
     "REFERENCIA": "A2003",
     "NIT_EMISOR": "8338817",
     "NIT_RECEPTOR": "7378106",
-    "VALOR": 10.0,
-    "IVA": 1.2,
-    "TOTAL": 12.0
+    "VALOR": 10.00,
+    "IVA": 1.20,
+    "TOTAL": 12.00
   },
   {
     "TIEMPO": "Guatemala, 16/01/2025 10:00 hrs.",
     "REFERENCIA": "A2004",
     "NIT_EMISOR": "8338817",
     "NIT_RECEPTOR": "7378106",
-    "VALOR": 300.0,
-    "IVA": 36.0,
-    "TOTAL": 336.0
+    "VALOR": 300.00,
+    "IVA": 36.00,
+    "TOTAL": 336.00
   }
 ]

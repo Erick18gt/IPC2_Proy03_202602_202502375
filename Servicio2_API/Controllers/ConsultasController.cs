@@ -4,10 +4,7 @@ using Servicio2_API.Utilidades;
 
 namespace Servicio2_API.Controllers;
 
-// Aquí están las consultas del frontend: los reportes, el resumen de IVA y las demás.
-// Todas son GET y los datos van en la URL
-// Las fechas las acepto como 15/01/2025 o como 2025-01-15.
-// En los rangos, si no mandan inicio o fin, ese lado queda sin límite.
+
 [ApiController]
 [Route("api/consultas")]
 public class ConsultasController : ControllerBase

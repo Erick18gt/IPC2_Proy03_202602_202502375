@@ -1,0 +1,102 @@
+@page
+@model ResumenRangoModel
+@{
+    ViewData["Title"] = "Resumen por rango de fechas";
+}
+
+<h1 class="h3 mb-2">Resumen por rango de fechas</h1>
+<p class="text-muted">Elige un rango de fechas y si quieres ver los valores totales (con IVA) o sin IVA. Se muestra el valor autorizado de cada fecha. Si dejas las fechas vacías se toman todas.</p>
+
+<form method="get" class="tarjeta mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Inicio">Desde</label>
+            <input class="form-control" type="date" id="Inicio" name="Inicio" value="@Model.Inicio" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Fin">Hasta</label>
+            <input class="form-control" type="date" id="Fin" name="Fin" value="@Model.Fin" />
+        </div>
+        <div class="col-md-4">
+            <span class="form-label fw-semibold d-block">Valores</span>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Modo" id="modo-total" value="total" checked="@(Model.Modo != "sinIva")" />
+                <label class="form-check-label" for="modo-total">Totales (con IVA)</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Modo" id="modo-siniva" value="sinIva" checked="@(Model.Modo == "sinIva")" />
+                <label class="form-check-label" for="modo-siniva">Sin IVA</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Consultar</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Datos != null)
+{
+    var d = Model.Datos;
+    <div class="tarjeta mb-3" id="resultado">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="h5 mb-0">Valor autorizado por fecha</h2>
+                <span class="text-muted small">@(d.Modo == "sinIva" ? "Valores sin IVA" : "Valores totales (con IVA)") · @Model.RangoTexto</span>
+            </div>
+            @if (d.Detalle.Count > 0)
+            {
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btn-pdf">Descargar PDF</button>
+            }
+        </div>
+
+        @if (d.Detalle.Count == 0)
+        {
+            <p class="text-muted mb-0">No hay facturas autorizadas para ese filtro.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered tabla-datos mb-0">
+                    <thead><tr><th>Fecha</th><th class="num">Valor autorizado</th></tr></thead>
+                    <tbody>
+                        @foreach (LineaRango l in d.Detalle)
+                        {
+                            <tr><td>@l.Fecha</td><td class="num">@Formato.Dinero(l.Valor)</td></tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-semibold"><td>Total del rango</td><td class="num">@Formato.Dinero(d.TotalGeneral)</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+
+    @if (d.Detalle.Count > 0)
+    {
+        <div class="grafica"><canvas id="grafica"></canvas></div>
+    }
+
+    <script id="datos" type="application/json">@Html.Raw(Model.DatosJson)</script>
+}
+
+@section Scripts {
+    <partial name="_LibreriasGraficas" />
+    <script>
+        // Dibuja la gráfica y deja listo el botón del PDF.
+        const el = document.getElementById('datos');
+        if (el) {
+            const datos = JSON.parse(el.textContent);
+            const canvas = document.getElementById('grafica');
+            if (canvas) Graficas.rango(canvas, datos.rango);
+
+            const boton = document.getElementById('btn-pdf');
+            if (boton) boton.addEventListener('click', () => Reportes.descargar(datos, 'resumen-rango.pdf'));
+        }
+    </script>
+}

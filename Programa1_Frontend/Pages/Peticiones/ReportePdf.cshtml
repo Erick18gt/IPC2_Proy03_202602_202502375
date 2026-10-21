@@ -1,0 +1,97 @@
+@page
+@model ReportePdfModel
+@{
+    ViewData["Title"] = "Reporte completo en PDF";
+}
+
+<h1 class="h3 mb-2">Reporte completo en PDF</h1>
+<p class="text-muted">
+    Junta todas las peticiones en un solo PDF. El reporte de facturas y el resumen por rango siempre se incluyen;
+    la consulta de contribuyente solo si escribes un NIT, y el resumen de IVA solo si eliges una fecha.
+</p>
+
+<form method="get" class="tarjeta mb-4">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Inicio">Rango: desde</label>
+            <input class="form-control" type="date" id="Inicio" name="Inicio" value="@Model.Inicio" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="Fin">Rango: hasta</label>
+            <input class="form-control" type="date" id="Fin" name="Fin" value="@Model.Fin" />
+        </div>
+        <div class="col-md-3">
+            <span class="form-label fw-semibold d-block">Resumen por rango</span>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Modo" id="modo-total" value="total" checked="@(Model.Modo != "sinIva")" />
+                <label class="form-check-label" for="modo-total">Con IVA</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Modo" id="modo-siniva" value="sinIva" checked="@(Model.Modo == "sinIva")" />
+                <label class="form-check-label" for="modo-siniva">Sin IVA</label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold" for="FechaIva">Fecha del resumen de IVA</label>
+            <input class="form-control" type="date" id="FechaIva" name="FechaIva" value="@Model.FechaIva" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-semibold" for="Nit">NIT para la consulta de contribuyente (opcional)</label>
+            <input class="form-control" id="Nit" name="Nit" value="@Model.Nit" autocomplete="off" />
+        </div>
+        <div class="col-md-4">
+            <span class="form-label fw-semibold d-block">Facturas del contribuyente</span>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipo-emitidas" value="emitidas" checked="@(Model.Tipo != "recibidas")" />
+                <label class="form-check-label" for="tipo-emitidas">Emitidas</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipo-recibidas" value="recibidas" checked="@(Model.Tipo == "recibidas")" />
+                <label class="form-check-label" for="tipo-recibidas">Recibidas</label>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Preparar reporte</button>
+        </div>
+    </div>
+</form>
+
+@foreach (string e in Model.Errores)
+{
+    <div class="alert alert-danger">@e</div>
+}
+
+@if (Model.Generado)
+{
+    <div class="tarjeta" id="resumen-reporte">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="h5 mb-0">El reporte está listo</h2>
+                <span class="text-muted small">Rango: @Model.RangoTexto</span>
+            </div>
+            <button type="button" class="btn btn-success" id="btn-pdf">Descargar PDF completo</button>
+        </div>
+        <p class="mb-2">Incluye estas secciones:</p>
+        <ul class="mb-0">
+            @if (Model.Reporte != null) { <li>Reporte de facturas por fecha (@Model.Reporte.Count fecha(s))</li> }
+            @if (Model.Contribuyente != null) { <li>Consulta de contribuyente @Model.Contribuyente.Nit (@Model.Contribuyente.Tipo)</li> }
+            @if (Model.Iva != null) { <li>Resumen de IVA del @Model.Iva.Fecha, con gráfica</li> }
+            @if (Model.Rango != null) { <li>Resumen por rango de fechas (@(Model.Rango.Modo == "sinIva" ? "sin IVA" : "con IVA")), con gráfica</li> }
+        </ul>
+    </div>
+
+    <script id="datos" type="application/json">@Html.Raw(Model.DatosJson)</script>
+}
+
+@section Scripts {
+    <partial name="_LibreriasGraficas" />
+    <script>
+        const boton = document.getElementById('btn-pdf');
+        if (boton) {
+            boton.addEventListener('click', () => {
+                const datos = JSON.parse(document.getElementById('datos').textContent);
+                Reportes.descargar(datos, 'reporte-completo.pdf');
+            });
+        }
+    </script>
+}

@@ -1,0 +1,35 @@
+@page
+@model InicializarModel
+@{
+    ViewData["Title"] = "Inicializar";
+}
+
+<h1 class="h3 mb-2">Inicializar el sistema</h1>
+<p class="text-muted">
+    Esta opción le manda un mensaje a la API para devolver el sistema al estado inicial, es decir, sin datos:
+    se borran el RTU, las facturas y los correlativos. No se puede deshacer.
+</p>
+
+@if (Model.Mensaje != null)
+{
+    <div class="alert alert-success" id="mensaje-ok">@Model.Mensaje</div>
+}
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Estado != null)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="dato"><div class="numero">@Model.Estado.Contribuyentes</div><div class="texto">Contribuyentes en el RTU</div></div></div>
+        <div class="col-md-4"><div class="dato"><div class="numero">@Model.Estado.FacturasRecibidas</div><div class="texto">Facturas recibidas</div></div></div>
+        <div class="col-md-4"><div class="dato"><div class="numero">@Model.Estado.FacturasAprobadas</div><div class="texto">Facturas aprobadas</div></div></div>
+    </div>
+}
+
+<form method="post" class="tarjeta">
+    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres borrar todos los datos? No se puede deshacer.');">
+        Inicializar sistema
+    </button>
+</form>

@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Programa1_Frontend.Pages.Ayuda;
 
-// Esta página muestra la documentación del programa (el ensayo en PDF).
-// El archivo tiene que estar en Programa1_Frontend/wwwroot/docs/ con el nombre documentacion.pdf.
+
 public class DocumentacionModel : PageModel
 {
     private readonly IWebHostEnvironment _entorno;

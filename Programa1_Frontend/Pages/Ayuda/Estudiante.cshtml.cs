@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Programa1_Frontend.Pages.Ayuda;
 
-// Esta página muestra la información del estudiante.
-// Los datos se cambian en appsettings.json, en la sección "Estudiante".
 public class EstudianteModel : PageModel
 {
     private readonly IConfiguration _config;
